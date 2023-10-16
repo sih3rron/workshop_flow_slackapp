@@ -154,6 +154,8 @@ data();
 
 //Manage View Submission events + actions
 app.view("form_modal", async ({ ack, body, view, client, logger }) => {
+
+//Acknowledge action - standard practice in a Slack app.
   await ack();
 
 //Slack app state variables.
@@ -191,13 +193,16 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
     "users": members.toString(),
   });
 
+//Create an Array to filter new members into.
   const newMembers = [];
 
+//Loop over members Array and filter out email addresses
   for (let i = 0; i < members.length; i++) {
     const memberInfo = await userData.userInfo(members[i], app);
     newMembers.push(memberInfo.user.profile.email);
   }
 
+//Add new members to the new Miro Board
   const addMembers = await fetchBoards.fetchData(
     "POST",
     `${process.env.MIRO_API_URI}/${copyBoard.id}/members`,
@@ -209,25 +214,27 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
     },
   );
 
-  //Create a message to confirm the Miro Board has been duplicated
+//Create a message to confirm the Miro Board has been duplicated
   let msgMiroConfirm =
     `Your Miro Board: *<${copyBoard.viewLink} | ${boardName.value}>* has been successfully created.`;
 
-  //Post the message.
+//Post the confirmation message
   await client.chat.postMessage({
     channel: user,
     text: msgMiroConfirm,
   });
 
+//Confirmation message to the new Slack Channel
   let msgMiroBoard =
     `Here is your Miro Board: *<${copyBoard.viewLink} | ${boardName.value}>*.`;
 
-  //Post the Miro board to the new Slack Channel
+//Post the Miro board to the new Slack Channel
   await client.chat.postMessage({
     "channel": channelName.value,
     "text": msgMiroBoard,
   });
 
+//Add the board as a bookmark to the new channel.
   await client.bookmarks.add({
     "channel": channelInfo.channel.id,
     "title": boardName.value,
