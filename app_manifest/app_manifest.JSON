@@ -1,10 +1,12 @@
 {
     "display_information": {
-        "name": "Message Submission"
+        "name": "Workshop Foundation",
+        "description": "Set-up your Workshop straight from Slack.",
+        "background_color": "#000000"
     },
     "features": {
         "bot_user": {
-            "display_name": "Message Submission",
+            "display_name": "Workshop Foundation",
             "always_online": false
         },
         "slash_commands": [
@@ -19,28 +21,34 @@
         "scopes": {
             "user": [
                 "channels:write",
+                "channels:write.invites",
                 "groups:write",
+                "groups:write.invites",
                 "im:write",
                 "mpim:write",
-                "channels:write.invites",
-                "groups:write.invites",
-                "mpim:write.invites"
+                "mpim:write.invites",
+                "users:read",
+                "users:read.email",
+                "bookmarks:write"
             ],
             "bot": [
+                "bookmarks:write",
                 "channels:history",
                 "channels:manage",
+                "channels:write.invites",
                 "chat:write",
                 "chat:write.public",
                 "commands",
                 "groups:history",
                 "groups:write",
+                "groups:write.invites",
                 "im:history",
                 "im:write",
                 "mpim:history",
                 "mpim:write",
-                "channels:write.invites",
-                "groups:write.invites",
-                "mpim:write.invites"
+                "mpim:write.invites",
+                "users:read",
+                "users:read.email"
             ]
         }
     },

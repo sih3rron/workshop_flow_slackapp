@@ -32,7 +32,7 @@ const data = async () => {
     });
   }
 
-  app.command("/modal", async ({ ack, body, client, logger }) => {
+  app.command("/workshop", async ({ ack, body, client, logger }) => {
     await ack();
 
     try {
