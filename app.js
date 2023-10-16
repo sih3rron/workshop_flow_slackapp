@@ -171,7 +171,6 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
     view["state"]["values"]["board_selection"]["static_select-action"];
 
 //Duplicate an existing Miro Board from a list
-
   const copyBoard = await fetchBoards.fetchData(
     "PUT",
     `${process.env.MIRO_API_URI}?copy_from=${board_id.selected_option.value}`,
@@ -182,11 +181,11 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
   );
 
 //Create a new Slack Channel from an input
-
   const channelInfo = await client.conversations.create({
     "name": `${channelName.value}`,
   });
 
+//Invite the Workshop Slack users to the channel
   const newUsers = await client.conversations.invite({
     "channel": channelInfo.channel.id,
     "users": members.toString(),
@@ -221,13 +220,21 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
   });
 
   let msgMiroBoard =
-    `Here is your Miro Board: *<${copyBoard.viewLink} | ${boardName.value}>* .`;
+    `Here is your Miro Board: *<${copyBoard.viewLink} | ${boardName.value}>*.`;
 
   //Post the Miro board to the new Slack Channel
   await client.chat.postMessage({
-    channel: channelName.value,
-    text: msgMiroBoard,
+    "channel": channelName.value,
+    "text": msgMiroBoard,
   });
+
+  await client.bookmarks.add({
+    "channel": channelInfo.channel.id,
+    "title": boardName.value,
+    "type": "link",
+    "link": `${copyBoard.viewLink}`
+  });
+
 });
 
 (async () => {
