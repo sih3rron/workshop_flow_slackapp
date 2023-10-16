@@ -24,7 +24,9 @@ const fetchData = async (method, uri, body={}) => {
     const URL = uri;
     const req = await fetch(URL, needsBody);
     const res = await req.json();
+    
     return res;
+
   };
   
 exports.fetchData = fetchData;

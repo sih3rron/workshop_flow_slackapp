@@ -1,6 +1,7 @@
 const { App } = require("@slack/bolt");
 require("dotenv").config();
 const fetchBoards = require("./functions/fetchData");
+const userData = require("./functions/userInfo");
 
 // Initializes your app with your bot token and signing secret
 const app = new App({
@@ -167,7 +168,7 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
     view["state"]["values"]["board_selection"]["static_select-action"];
 
   //Duplicate an existing Miro Board from a list
-  try {
+
     const copyBoard = await fetchBoards.fetchData(
       "PUT",
       `${process.env.MIRO_API_URI}/boards?copy_from=${board_id.selected_option.value}`,
@@ -178,7 +179,7 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
     );
 
     //Create a new Slack Channel from an input
-    try {
+
       const channelInfo = await client.conversations.create({
         "name": `${channelName.value}`,
       });
@@ -187,13 +188,29 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
         "channel": channelInfo.channel.id,
         "users": members.toString(),
       });
-    } catch (error) {
-      logger.error(error);
-    }
+
+      const newMembers = [];
+
+      for(let i = 0; i < members.length; i++){
+        const memberInfo = await userData.userInfo(members[i], app);
+        newMembers.push(memberInfo.user.profile.email);
+      }
+      
+      const addMembers = await fetchBoards.fetchData(
+        "POST",
+        `${process.env.MIRO_API_URI}/boards/${copyBoard.id}/members`,
+        {
+          "emails": newMembers, 
+          "role": 'commenter',
+          "message": 'Hi there, You\'ll need this board if you\'re attending our workshop'
+        },
+      );
 
     //Create a message to confirm the Miro Board has been duplicated
     let msgMiroConfirm =
       `Your Miro Board: *<${copyBoard.viewLink} | ${boardName.value}>* has been successfully created.`;
+
+    
 
     //Post the message.
     await client.chat.postMessage({
@@ -209,9 +226,7 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
       channel: channelName.value,
       text: msgMiroBoard,
     });
-  } catch (error) {
-    logger.error(error);
-  }
+
 });
 
 (async () => {
