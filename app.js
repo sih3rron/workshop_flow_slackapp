@@ -12,10 +12,11 @@ const app = new App({
   port: process.env.PORT || 3000,
 });
 
+//Fetch our existing boards
 const data = async () => {
   const miroBoards = await fetchBoards.fetchData(
     "GET",
-    `${process.env.MIRO_API_URI}/boards`,
+    `${process.env.MIRO_API_URI}?query=[Template]`,
   );
 
   let boardList = [];
@@ -67,9 +68,10 @@ const data = async () => {
               "elements": [
                 {
                   "type": "mrkdwn",
-                  "text": "Channel names should follow the format *<https://www.google.com | outlined here>!*"
-                }
-              ]
+                  "text":
+                    "Channel names should follow the format *<https://www.google.com | outlined here>!*",
+                },
+              ],
             },
             {
               "type": "input",
@@ -90,14 +92,15 @@ const data = async () => {
               },
             },
             {
-              "type": "divider"
+              "type": "divider",
             },
             {
               "type": "section",
               "block_id": "board_selection",
               "text": {
                 "type": "mrkdwn",
-                "text": "*Pick a Miro board to duplicate from the dropdown list*",
+                "text":
+                  "*Pick a Miro board to duplicate from the dropdown list*",
               },
               "accessory": {
                 "type": "static_select",
@@ -136,7 +139,7 @@ const data = async () => {
                 "text": "Describe your Miro Board",
                 "emoji": true,
               },
-            }
+            },
           ],
         },
       });
@@ -153,7 +156,7 @@ data();
 app.view("form_modal", async ({ ack, body, view, client, logger }) => {
   await ack();
 
-  //Slack app state variables.
+//Slack app state variables.
   const user = body["user"]["id"];
   const channelName =
     view["state"]["values"]["name_your_channel"]["plain_text_input-action"];
@@ -167,66 +170,64 @@ app.view("form_modal", async ({ ack, body, view, client, logger }) => {
   const board_id =
     view["state"]["values"]["board_selection"]["static_select-action"];
 
-  //Duplicate an existing Miro Board from a list
+//Duplicate an existing Miro Board from a list
 
-    const copyBoard = await fetchBoards.fetchData(
-      "PUT",
-      `${process.env.MIRO_API_URI}/boards?copy_from=${board_id.selected_option.value}`,
-      {
-        "name": boardName.value,
-        "description": boardDesc.value,
-      },
-    );
+  const copyBoard = await fetchBoards.fetchData(
+    "PUT",
+    `${process.env.MIRO_API_URI}?copy_from=${board_id.selected_option.value}`,
+    {
+      "name": boardName.value,
+      "description": boardDesc.value,
+    },
+  );
 
-    //Create a new Slack Channel from an input
+//Create a new Slack Channel from an input
 
-      const channelInfo = await client.conversations.create({
-        "name": `${channelName.value}`,
-      });
+  const channelInfo = await client.conversations.create({
+    "name": `${channelName.value}`,
+  });
 
-      const newUsers = await client.conversations.invite({
-        "channel": channelInfo.channel.id,
-        "users": members.toString(),
-      });
+  const newUsers = await client.conversations.invite({
+    "channel": channelInfo.channel.id,
+    "users": members.toString(),
+  });
 
-      const newMembers = [];
+  const newMembers = [];
 
-      for(let i = 0; i < members.length; i++){
-        const memberInfo = await userData.userInfo(members[i], app);
-        newMembers.push(memberInfo.user.profile.email);
-      }
-      
-      const addMembers = await fetchBoards.fetchData(
-        "POST",
-        `${process.env.MIRO_API_URI}/boards/${copyBoard.id}/members`,
-        {
-          "emails": newMembers, 
-          "role": 'commenter',
-          "message": 'Hi there, You\'ll need this board if you\'re attending our workshop'
-        },
-      );
+  for (let i = 0; i < members.length; i++) {
+    const memberInfo = await userData.userInfo(members[i], app);
+    newMembers.push(memberInfo.user.profile.email);
+  }
 
-    //Create a message to confirm the Miro Board has been duplicated
-    let msgMiroConfirm =
-      `Your Miro Board: *<${copyBoard.viewLink} | ${boardName.value}>* has been successfully created.`;
+  const addMembers = await fetchBoards.fetchData(
+    "POST",
+    `${process.env.MIRO_API_URI}/${copyBoard.id}/members`,
+    {
+      "emails": newMembers,
+      "role": "commenter",
+      "message":
+        "Hi there, You'll need this board if you're attending our workshop",
+    },
+  );
 
-    
+  //Create a message to confirm the Miro Board has been duplicated
+  let msgMiroConfirm =
+    `Your Miro Board: *<${copyBoard.viewLink} | ${boardName.value}>* has been successfully created.`;
 
-    //Post the message.
-    await client.chat.postMessage({
-      channel: user,
-      text: msgMiroConfirm,
-    });
+  //Post the message.
+  await client.chat.postMessage({
+    channel: user,
+    text: msgMiroConfirm,
+  });
 
-    let msgMiroBoard =
-      `Here is your Miro Board: *<${copyBoard.viewLink} | ${boardName.value}>* .`;
+  let msgMiroBoard =
+    `Here is your Miro Board: *<${copyBoard.viewLink} | ${boardName.value}>* .`;
 
-    //Post the Miro board to the new Slack Channel
-    await client.chat.postMessage({
-      channel: channelName.value,
-      text: msgMiroBoard,
-    });
-
+  //Post the Miro board to the new Slack Channel
+  await client.chat.postMessage({
+    channel: channelName.value,
+    text: msgMiroBoard,
+  });
 });
 
 (async () => {
