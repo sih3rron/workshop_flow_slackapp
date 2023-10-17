@@ -11,8 +11,8 @@
         },
         "slash_commands": [
             {
-                "command": "/modal",
-                "description": "Launches a modal form",
+                "command": "/workshop",
+                "description": "Launches a modal to begin orienting the foundation of your workshop.",
                 "should_escape": false
             }
         ]
