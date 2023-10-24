@@ -81,4 +81,27 @@ Having created the app, you will then be directed to your apps "Basic informatio
 
 While you aren't building an app in Miro itself, to obtain your Client ID, Client Secret, and Authorization token you will need to follow the config creation process for "Building an app" in Miro.
 
+* Visit "[Miro Developer Documentation](https://developers.miro.com/page/developer-hub)".
+* Click on "Your apps" on the left-hand navigation.
+* "Create a new app" - give it an appropriate name, assign it to the developer team.
+* Your Credentials will be generated within that workspace.
+* You will need to fill out the APP URL, I would recommend an arbitrary localhost URL as we won't be using this.
+* Set permissions to "boards:read" + "boards:write"
+* Click "Install app and get OAuth token" - this will generate an API Authentication token that you can then assign to your `.env` file.
 
+
+## Running the repo
+
+Having updated your environment variables, run the following to install your dependencies:
+
+```
+npm install
+```
+
+To run the project run:
+
+```
+node app.js
+```
+
+This will run the app locally. Open your Slack Workspace with the Workshop App installed and search for the slash command. If you didn't amend your app manifest then the command will be `/workshop`. Triggering that slash should then open a modal displaying a form flow.
