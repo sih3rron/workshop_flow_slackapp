@@ -56,6 +56,11 @@ const data = async () => {
               "element": {
                 "type": "plain_text_input",
                 "action_id": "plain_text_input-action",
+                "placeholder": {
+                  "type": "plain_text",
+                  "text": "e.g. int_product_workshop_yymm"
+                },
+                "focus_on_load": true,
               },
               "label": {
                 "type": "plain_text",
