@@ -18,12 +18,17 @@ The application is built in NodeJS and JavaScript. It uses Slacks' [Bolt JavaScr
   
 ## How to run the app
 
+> [!IMPORTANT]
+> In order to run this app you will need access to both a Slack Workspace and a Miro account. Both of these can be created for free.
+>
+
 > [!NOTE]  
 > Socket mode
 > 
 > The app, as a prototype, is using Slacks "[Socket mode](https://app.slack.com/app-settings/T059208QTEW/A061HBUUGQ0/socket-mode)" rather than public request URL endpoints. It is advisable to use Request URLs if you want to put this into production. 
 > 
 > Socket mode affects aspects of Interactivity, the Slash Command used to trigger the app, and how the app responds to Event Subscriptions.
+>
 
 ### Instructions
 
@@ -47,6 +52,33 @@ MIRO_API_URI="https://api.miro.com/v2/"
 
 ```
 
-Slack makes it really easy for you to construct apps
+Finding the credentials to fill your `.env` file is really simple.
+
+## The Slack part
+
+Slack makes it easy to set up apps from an `app manifest` a JSON or YAML schema of your app. I have included a JSON schema in the code bundle under `./app_manifest`. 
+
+You can use that manifest by visiting the Slack API docs. 
+
+Click "[Create your app](https://api.slack.com/apps?new_app=1)" and select the option "From an app manifest".  
+
+**Step 1.** You will be asked to select the Workspace you want to develop in.
+
+**Step 2** Copy and paste the JSON app manifest I have provided into the panel provided. You will likely want to amend the following JSON values: 
+
+* display_information > name
+* display_information > description
+* features > bot_user > display_name  
+* features > slash_commands > command
+
+It's worth noting that these don't have to be changed here, you will have opportunities to change their values via the Slack UI.
+
+**Step 3** The interface will present you with an overview of the app features and settings for you to review before you create the app.
+
+Having created the app, you will then be directed to your apps "Basic information" where you can start the process of gathering your App, User, and Bot tokens to fulfil the `.env` variables.
+
+## The Miro part
+
+While you aren't building an app in Miro itself, to obtain your Client ID, Client Secret, and Authorization token you will need to follow the config creation process for "Building an app" in Miro.
 
 
