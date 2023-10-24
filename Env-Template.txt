@@ -10,3 +10,4 @@ MIRO_CLIENT_SECRET=
 MIRO_APP_TOKEN=
 MIRO_REDIRECT_URL="http://localhost:3000/redirect",
 MIRO_API_URI="https://api.miro.com/v2/"
+MIRO_SEARCH_QUERY="Template"

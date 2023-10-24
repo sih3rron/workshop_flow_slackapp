@@ -49,6 +49,7 @@ MIRO_CLIENT_SECRET=
 MIRO_APP_TOKEN=  
 MIRO_REDIRECT_URL="http://localhost:3000/redirect"  
 MIRO_API_URI="https://api.miro.com/v2/"  
+MIRO_SEARCH_QUERY="Template"  
 
 ```
 
@@ -89,6 +90,9 @@ While you aren't building an app in Miro itself, to obtain your Client ID, Clien
 * Set permissions to "boards:read" + "boards:write"
 * Click "Install app and get OAuth token" - this will generate an API Authentication token that you can then assign to your `.env` file.
 
+In order for the app to work (i.e. grab a board and duplicate it ) there will need to be at least a single board created in your account.
+
+If you have multiple "template" boards in your account, then you can modify the Environment variable `MIRO_SEARCH_QUERY` to contain a keyword that will identify a specific subset of boards. If you leave `MIRO_SEARCH_QUERY` empty, then the API will bring back every available board. This isn't recommended for organisations with more than a hundred boards.
 
 ## Running the repo
 

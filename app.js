@@ -16,7 +16,7 @@ const app = new App({
 const data = async () => {
   const miroBoards = await fetchBoards.fetchData(
     "GET",
-    `${process.env.MIRO_API_URI}?query=[Template]`,
+    `${process.env.MIRO_API_URI}?query=${process.env.MIRO_SEARCH_QUERY}`,
   );
 
   let boardList = [];
